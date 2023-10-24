@@ -37,6 +37,7 @@ public class LoginActivity extends AppCompatActivity {
         SharedPreferences pref;
         SharedPreferences.Editor editor;
         pref = getSharedPreferences("pin", 0);
+        pref = getSharedPreferences("id", 0);
         editor = pref.edit();
 
         myPin = pref.getString("pin", "0");
@@ -68,6 +69,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         String message = null;
                         String pin = null;
+
                         try {
                             pin = response.getString("pin");
                             message = response.getString("message");

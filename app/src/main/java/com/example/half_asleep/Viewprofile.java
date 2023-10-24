@@ -1,5 +1,6 @@
 package com.example.half_asleep;
 
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -31,7 +32,6 @@ import java.io.InputStream;
 public class Viewprofile extends AppCompatActivity{
 
     private static final int REQUEST_CODE=0;
-    private SharedPreferences pref;
     public static String BitmapToString(Bitmap bitmap){
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -90,11 +90,12 @@ public class Viewprofile extends AppCompatActivity{
     }
     String ops;
     String myPin;
-    String myId;
+
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profileview);
-
+        String myId;
         String url_get = "http://58.126.238.66:9900/get_user_info/";
         RequestQueue queue;
         queue = Volley.newRequestQueue(this);
@@ -104,8 +105,8 @@ public class Viewprofile extends AppCompatActivity{
         EditText pwd = findViewById(R.id.edit_pwd);
         ImageView img = findViewById(R.id.prof_img);
         Button prfset=findViewById(R.id.prfset_btn);
+        SharedPreferences pref;
         SharedPreferences.Editor editor;
-        pref = getSharedPreferences("pin", 0);
         pref = getSharedPreferences("id", 0);
         editor = pref.edit();
         myId = pref.getString("id","-");
