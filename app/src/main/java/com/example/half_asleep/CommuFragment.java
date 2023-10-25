@@ -1,18 +1,16 @@
 package com.example.half_asleep;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Toast;
 
-import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -71,45 +69,53 @@ public class CommuFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
-    ArrayList<String> list;
+    ArrayList<CommuEntry> list;
     ArrayList<String> list_name;
     ArrayList<String> list_prf;
     ArrayList<String> list_date;
     ArrayList<String> list_thumb;
     ArrayList<String> list_content;
     String myId;
+    CommuEntry Entry;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_commu, container, false);
-        list = new ArrayList<>();
-        list.add("사용자 1");
-        list.add("사용자 2");
-        list.add("사용자 3");
-        list.add("사용자 4");
+       list = new ArrayList<CommuEntry>();
 
 
         RequestQueue queue;
         queue = Volley.newRequestQueue(getContext());
-        String url ="http://58.126.238.66:9900/get_posts_friends/";
+        String url ="http://58.126.238.66:9900/get_posts";
+        RecyclerView recyclerView = view.findViewById(R.id.rv_diary);
 
-        url = url+myId;
-/*
+
         JsonObjectRequest jsonObjectRequest_i = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             //응답받은 JSONObject 에서 데이터 꺼내오기
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    JSONArray id = response.getJSONArray("id");
-                    for (int i = 0; i < id.length(); i++) {
-                    JSONObject idobj = id.getJSONObject(i);
-                    list.add(idobj.getString("id"));
+                    JSONArray id = response.getJSONArray("posts");
+                    for(int i = 0;i<id.length();i++) {
+                        JSONObject idobj = id.getJSONObject(i);
+                         Entry = new CommuEntry(
+                                idobj.getString("post_id"),
+                                idobj.getString("username"),
+                                idobj.getString("profileImage"),
+                                idobj.getString("date"),
+                                idobj.getString("postImage"),
+                                idobj.getString("content")
+                        );
+                        list.add(Entry);
                     }
-                    JSONArray prf = response.getJSONArray("profileImage");
-                    for (int i = 0; i < id.length(); i++) {
-                        JSONObject idobj = prf.getJSONObject(i);
-                        list_prf.add(idobj.getString("profileImage"));
-                    }
+                    Adapter adapter = new Adapter(list);
+
+                    RecyclerView recyclerView = view.findViewById(R.id.rv_diary);
+
+                    recyclerView.setAdapter(adapter);
+
+
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -122,13 +128,9 @@ public class CommuFragment extends Fragment {
             }
         });
         queue.add(jsonObjectRequest_i);
-*/
 
-        Adapter adapter = new Adapter(list);
 
-        RecyclerView recyclerView = view.findViewById(R.id.rv_diary);
 
-        recyclerView.setAdapter(adapter);
 
         return view;
     }

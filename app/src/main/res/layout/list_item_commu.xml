@@ -6,7 +6,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="570dp"
+        android:layout_height="match_parent"
         android:gravity="center_vertical"
         android:layout_marginTop="10dp"
         android:orientation="vertical">
@@ -26,12 +26,13 @@
 
             <TextView
                 android:id="@+id/name"
-                android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
-                android:text="닉네임"
+                android:layout_height="wrap_content"
                 android:layout_marginLeft="6dp"
+                android:text="닉네임"
                 android:textColor="@color/black"
-                android:textSize="24dp"/>
+                android:textSize="24dp" />
+
 
         </LinearLayout>
 
@@ -53,6 +54,15 @@
             android:maxLines="3"
             android:textColor="#7a7a7a"
             />
+
+        <TextView
+            android:id="@+id/Date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:text="작성날짜:"
+            android:textColor="@color/gray"
+            android:textSize="15dp" />
 
         <LinearLayout
             android:layout_width="match_parent"

@@ -1,6 +1,7 @@
 package com.example.half_asleep;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
@@ -17,13 +18,9 @@ import java.util.ArrayList;
 
 public class Adapter extends RecyclerView.Adapter<Holder> {
 
-    ArrayList<String> list;
-    ArrayList<String> list_name;
-    ArrayList<String> list_prf;
-    ArrayList<String> list_date;
-    ArrayList<String> list_thumb;
-    ArrayList<String> list_content;
-    Adapter(ArrayList<String> list) {
+    ArrayList<CommuEntry> list;
+
+    Adapter(ArrayList<CommuEntry> list) {
         this.list = list;
     }
 
@@ -38,8 +35,18 @@ public class Adapter extends RecyclerView.Adapter<Holder> {
 
     @Override
     public void onBindViewHolder(@NonNull Holder holder, int position) {
-        holder.content.setText(list.get(position));
+        holder.content.setText(list.get(position).getcontent());
+        holder.name.setText(list.get(position).getusername());
+        holder.Date.setText(list.get(position).getpostDate());
+        holder.prf.setImageBitmap(StringToBitmap(list.get(position).getprofileImage()));
+        holder.thumb.setImageBitmap(StringToBitmap(list.get(position).getpostImage()));
+        String id = list.get(position).getPost_id();
+        holder.thumb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
+            }
+        });
     }
 
 
@@ -60,16 +67,18 @@ public class Adapter extends RecyclerView.Adapter<Holder> {
 }
 
 class Holder extends RecyclerView.ViewHolder {
-    TextView content,name;
+    TextView content,name,Date;
     ImageView prf,thumb;
 
 
     public Holder(@NonNull View itemView) {
         super(itemView);
         content = itemView.findViewById(R.id.tv_content);
-        name = itemView.findViewById(R.id.name);
+        name = itemView.findViewById(R.id.Date);
         prf = itemView.findViewById(R.id.prf);
         thumb = itemView.findViewById(R.id.iv_pic);
+        Date = itemView.findViewById(R.id.name);
+
 
     }
 }
