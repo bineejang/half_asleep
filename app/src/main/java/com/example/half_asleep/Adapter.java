@@ -40,13 +40,8 @@ public class Adapter extends RecyclerView.Adapter<Holder> {
         holder.Date.setText(list.get(position).getpostDate());
         holder.prf.setImageBitmap(StringToBitmap(list.get(position).getprofileImage()));
         holder.thumb.setImageBitmap(StringToBitmap(list.get(position).getpostImage()));
-        String id = list.get(position).getPost_id();
-        holder.thumb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
 
-            }
-        });
+
     }
 
 
@@ -67,17 +62,17 @@ public class Adapter extends RecyclerView.Adapter<Holder> {
 }
 
 class Holder extends RecyclerView.ViewHolder {
-    TextView content,name,Date;
-    ImageView prf,thumb;
+    TextView content, name, Date;
+    ImageView prf, thumb;
 
 
     public Holder(@NonNull View itemView) {
         super(itemView);
         content = itemView.findViewById(R.id.tv_content);
-        name = itemView.findViewById(R.id.Date);
+        name = itemView.findViewById(R.id.name);
         prf = itemView.findViewById(R.id.prf);
         thumb = itemView.findViewById(R.id.iv_pic);
-        Date = itemView.findViewById(R.id.name);
+        Date = itemView.findViewById(R.id.Date);
 
 
     }

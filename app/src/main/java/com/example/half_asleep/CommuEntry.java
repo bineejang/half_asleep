@@ -7,7 +7,7 @@ public class CommuEntry {
     private String profileImage;
     private String postImage;
     private String content;
-    public CommuEntry(String diaryId, String postDate, String profileImage,String username,String postImage,String content) {
+    public CommuEntry(String diaryId, String username,String postDate, String profileImage,String postImage,String content) {
         this.post_id = diaryId;
         this.username = username;
         this.postDate = postDate;

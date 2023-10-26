@@ -70,64 +70,63 @@ public class CommuFragment extends Fragment {
         }
     }
     ArrayList<CommuEntry> list;
-    ArrayList<String> list_name;
-    ArrayList<String> list_prf;
-    ArrayList<String> list_date;
-    ArrayList<String> list_thumb;
-    ArrayList<String> list_content;
+
     String myId;
     CommuEntry Entry;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_commu, container, false);
-       list = new ArrayList<CommuEntry>();
+        list = new ArrayList<CommuEntry>();
 
-
+        int offset = 0;
         RequestQueue queue;
         queue = Volley.newRequestQueue(getContext());
-        String url ="http://58.126.238.66:9900/get_posts";
+        String url = "http://58.126.238.66:9900/get_posts?offset=";
         RecyclerView recyclerView = view.findViewById(R.id.rv_diary);
 
+        for (int j = 0; j < 1; j++) {
+            if (!recyclerView.canScrollVertically(1)) {
 
-        JsonObjectRequest jsonObjectRequest_i = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-            //응답받은 JSONObject 에서 데이터 꺼내오기
-            @Override
-            public void onResponse(JSONObject response) {
-                try {
-                    JSONArray id = response.getJSONArray("posts");
-                    for(int i = 0;i<id.length();i++) {
-                        JSONObject idobj = id.getJSONObject(i);
-                         Entry = new CommuEntry(
-                                idobj.getString("post_id"),
-                                idobj.getString("username"),
-                                idobj.getString("profileImage"),
-                                idobj.getString("date"),
-                                idobj.getString("postImage"),
-                                idobj.getString("content")
-                        );
-                        list.add(Entry);
+            }
+                JsonObjectRequest jsonObjectRequest_i = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                    //응답받은 JSONObject 에서 데이터 꺼내오기
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            JSONArray id = response.getJSONArray("posts");
+                            for (int i = 0; i < id.length(); i++) {
+                                JSONObject idobj = id.getJSONObject(i);
+                                Entry = new CommuEntry(
+                                        idobj.getString("post_id"),
+                                        idobj.getString("username"),
+                                        idobj.getString("date"),
+                                        idobj.getString("profileImage"),
+                                        idobj.getString("postImage"),
+                                        idobj.getString("content")
+                                );
+                                list.add(Entry);
+                            }
+                            Adapter adapter = new Adapter(list);
+
+                            RecyclerView recyclerView = view.findViewById(R.id.rv_diary);
+
+                            recyclerView.setAdapter(adapter);
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
                     }
-                    Adapter adapter = new Adapter(list);
-
-                    RecyclerView recyclerView = view.findViewById(R.id.rv_diary);
-
-                    recyclerView.setAdapter(adapter);
-
-
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(getContext(), "error: " + error.toString(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+                queue.add(jsonObjectRequest_i);
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getContext(), "error: " + error.toString(), Toast.LENGTH_SHORT).show();
-            }
-        });
-        queue.add(jsonObjectRequest_i);
 
 
 
