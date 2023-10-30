@@ -19,8 +19,9 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
 import com.android.volley.toolbox.StringRequest;
 import java.io.UnsupportedEncodingException;
-import java.io.UnsupportedEncodingException;
 import com.android.volley.VolleyLog;
+import android.content.SharedPreferences;
+import android.os.Bundle;
 
 import java.util.List;
 import java.util.Collections;
@@ -35,6 +36,9 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.Request;
+import com.android.volley.Response;
 
 public class MainActivity extends AppCompatActivity {
     final String TAG = this.getClass().getSimpleName();
@@ -52,9 +56,9 @@ public class MainActivity extends AppCompatActivity {
 
         requestQueue = Volley.newRequestQueue(this);
 
-        // 인텐트에서 PIN을 가져옵니다.
-        Intent intent = getIntent();
-        pin = intent.getStringExtra("pin");
+        // PIN을 SharedPreferences에서 가져옵니다.
+        SharedPreferences pref = getSharedPreferences("pin", 0);
+        pin = pref.getString("pin", "");
 
         init(); // 객체 정의
         SettingListener(); // 리스너 등록
@@ -62,6 +66,12 @@ public class MainActivity extends AppCompatActivity {
         // 탭을 처음에 선택합니다.
         bottomNavigationView.setSelectedItemId(R.id.tab_home);
 
+        bottomNavigationView.setOnNavigationItemSelectedListener(new TabSelectedListener());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         fetchUserDiaryData();
     }
 
@@ -98,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
                                 DiaryEntry entry = new DiaryEntry(diaryId, diaryDate, imageUrl);
                                 diaryEntries.add(entry);
                             }
-                            Collections.reverse(diaryEntries); //받아온 데이터를 역순으로 재배치
+                            Collections.reverse(diaryEntries); // 받아온 데이터를 역순으로 재배치
 
                             HomeFragment homeFragment = (HomeFragment) getSupportFragmentManager().findFragmentById(R.id.change_LinearLayout);
                             if (homeFragment != null) {
@@ -159,6 +169,7 @@ public class MainActivity extends AppCompatActivity {
                     getSupportFragmentManager().beginTransaction()
                             .replace(R.id.change_LinearLayout, new HomeFragment())
                             .commit();
+                    fetchUserDiaryData(); // 홈 버튼을 누를 때 데이터를 다시 받아옴
                     return true;
                 }
                 case R.id.tab_commu: {

@@ -1,9 +1,12 @@
 package com.example.half_asleep;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
@@ -70,24 +73,24 @@ public class CommuFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
-    ArrayList<CommuEntry> list;
+    ArrayList<CommuEntry> list = new ArrayList<CommuEntry>();
 
     String myId;
+    String myPin;
     CommuEntry Entry;
+    int offset=0;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_commu, container, false);
-        list = new ArrayList<CommuEntry>();
+        SharedPreferences pref = getActivity().getSharedPreferences("id",0);
+        myId = pref.getString("id","");
+        SharedPreferences pref_p = getActivity().getSharedPreferences("pin",0);
+        myPin = pref_p.getString("pin","");
 
-        int offset = 0;
-        RequestQueue queue;
-        queue = Volley.newRequestQueue(getContext());
-        String url = "http://58.126.238.66:9900/get_posts?offset=";
         Adapter adapter = new Adapter(list);
         RecyclerView recyclerView = view.findViewById(R.id.rv_diary);
-
-
+///get_posts_friends/<pin>
         adapter.setOnItemClickListener(new Adapter.OnItemClickListener() {
             @Override
             public void onItemClick(View v, int pos) {
@@ -98,47 +101,47 @@ public class CommuFragment extends Fragment {
             }
         });
 
-                JsonObjectRequest jsonObjectRequest_i = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-                    //응답받은 JSONObject 에서 데이터 꺼내오기
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            JSONArray id = response.getJSONArray("posts");
-                            for (int i = 0; i < id.length(); i++) {
-                                JSONObject idobj = id.getJSONObject(i);
-                                Entry = new CommuEntry(
-                                        idobj.getString("post_id"),
-                                        idobj.getString("username"),
-                                        idobj.getString("date"),
-                                        idobj.getString("profileImage"),
-                                        idobj.getString("postImage"),
-                                        idobj.getString("content")
-                                );
-                                list.add(Entry);
-                            }
-
-                            recyclerView.setAdapter(adapter);
-
-
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(getContext(), "error: " + error.toString(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-                queue.add(jsonObjectRequest_i);
-
-
-
+            request(recyclerView, adapter, offset);
 
 
 
         return view;
+    }
+    public void request(RecyclerView recyclerView,Adapter adapter,int offset){
+        RequestQueue queue;
+        queue = Volley.newRequestQueue(getContext());
+        String url = "http://58.126.238.66:9900/get_posts?offset=";
+        url=url+offset;
+        JsonObjectRequest jsonObjectRequest_i = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+            //응답받은 JSONObject 에서 데이터 꺼내오기
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    JSONArray JAry = response.getJSONArray("posts");
+                    for (int i = 0; i < JAry.length(); i++) {
+                        JSONObject idobj = JAry.getJSONObject(i);
+                        Entry = new CommuEntry(
+                                idobj.getString("post_id"),
+                                idobj.getString("username"),
+                                idobj.getString("date"),
+                                idobj.getString("profileImage"),
+                                idobj.getString("postImage"),
+                                idobj.getString("content")
+                        );
+                        list.add(Entry);
+                    }
+                    recyclerView.setAdapter(adapter);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getContext(), "error: " + error.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+        queue.add(jsonObjectRequest_i);
     }
 }
