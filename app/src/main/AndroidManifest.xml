@@ -58,6 +58,9 @@
             android:name=".SelectDiaryActivity"
             android:exported="true" />
         <activity
+            android:name=".View_post"
+            android:exported="true" />
+        <activity
             android:name=".RestAPITaskLogin"
             android:exported="true"
             tools:ignore="Instantiatable" />

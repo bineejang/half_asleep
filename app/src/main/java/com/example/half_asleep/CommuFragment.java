@@ -1,5 +1,6 @@
 package com.example.half_asleep;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -83,12 +84,20 @@ public class CommuFragment extends Fragment {
         RequestQueue queue;
         queue = Volley.newRequestQueue(getContext());
         String url = "http://58.126.238.66:9900/get_posts?offset=";
+        Adapter adapter = new Adapter(list);
         RecyclerView recyclerView = view.findViewById(R.id.rv_diary);
 
-        for (int j = 0; j < 1; j++) {
-            if (!recyclerView.canScrollVertically(1)) {
 
+        adapter.setOnItemClickListener(new Adapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View v, int pos) {
+                String id = list.get(pos).getPost_id();
+                Intent intent = new Intent(getContext(), View_post.class);
+                intent.putExtra("postID",id);
+                startActivity(intent);
             }
+        });
+
                 JsonObjectRequest jsonObjectRequest_i = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
                     //응답받은 JSONObject 에서 데이터 꺼내오기
                     @Override
@@ -107,11 +116,9 @@ public class CommuFragment extends Fragment {
                                 );
                                 list.add(Entry);
                             }
-                            Adapter adapter = new Adapter(list);
-
-                            RecyclerView recyclerView = view.findViewById(R.id.rv_diary);
 
                             recyclerView.setAdapter(adapter);
+
 
 
                         } catch (JSONException e) {
@@ -126,7 +133,8 @@ public class CommuFragment extends Fragment {
                     }
                 });
                 queue.add(jsonObjectRequest_i);
-            }
+
+
 
 
 

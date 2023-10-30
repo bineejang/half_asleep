@@ -16,8 +16,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-public class Adapter extends RecyclerView.Adapter<Holder> {
+public class Adapter extends RecyclerView.Adapter<Adapter.Holder> {
+public interface OnItemClickListener {
+    void onItemClick(View v, int pos);
+}
+private OnItemClickListener mListener = null;
 
+public void setOnItemClickListener(OnItemClickListener listener){
+    this.mListener = listener;
+}
     ArrayList<CommuEntry> list;
 
     Adapter(ArrayList<CommuEntry> list) {
@@ -59,21 +66,33 @@ public class Adapter extends RecyclerView.Adapter<Holder> {
             return null;
         }
     }
-}
-
-class Holder extends RecyclerView.ViewHolder {
-    TextView content, name, Date;
-    ImageView prf, thumb;
+    class Holder extends RecyclerView.ViewHolder {
+        TextView content, name, Date;
+        ImageView prf, thumb;
 
 
-    public Holder(@NonNull View itemView) {
-        super(itemView);
-        content = itemView.findViewById(R.id.tv_content);
-        name = itemView.findViewById(R.id.name);
-        prf = itemView.findViewById(R.id.prf);
-        thumb = itemView.findViewById(R.id.iv_pic);
-        Date = itemView.findViewById(R.id.Date);
+        public Holder(@NonNull View itemView) {
+            super(itemView);
+            content = itemView.findViewById(R.id.tv_content);
+            name = itemView.findViewById(R.id.name);
+            prf = itemView.findViewById(R.id.prf);
+            thumb = itemView.findViewById(R.id.iv_pic);
+            Date = itemView.findViewById(R.id.Date);
 
+            itemView.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v){
+                    int pos = getAdapterPosition();
+                    if (pos !=RecyclerView.NO_POSITION){
+                        if (mListener != null){
+                            mListener.onItemClick(v,pos);
+                        }
+                    }
+                }
+            });
 
+        }
     }
 }
+
+
