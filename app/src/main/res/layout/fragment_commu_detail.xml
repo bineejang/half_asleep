@@ -24,7 +24,7 @@
                 >
                 <!-- 현재 화면 타이틀 -->
                 <TextView
-                    android:id="@+id/tv_newtext_title"
+                    android:id="@+id/tv_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="16dp"
@@ -60,7 +60,20 @@
                     app:tint="@color/mainblue"
                     android:visibility="gone"
                     />
-
+                <ImageView
+                    android:id="@+id/iv_edit"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginRight="5dp"
+                    android:src="@drawable/img_pencil"
+                    app:tint="#797979" />
+                <ImageView
+                    android:id="@+id/iv_trash"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginRight="16dp"
+                    android:src="@drawable/ic_delete"
+                    app:tint="#797979"/>
 
             </LinearLayout>
 
@@ -98,35 +111,7 @@
 
 
             <!-- 날짜 -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginBottom="16dp"
-                android:orientation="vertical">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="날짜"
-                        android:textSize="16dp"
-                        android:textStyle="bold"
-                        android:textColor="@color/mainblue"
-                        android:fontFamily="@font/chosungu_ttf"/>
-
-                    <TextView
-                        android:id="@+id/tv_date"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="2022-12-19"
-                        android:textSize="14sp"
-                        android:layout_marginTop="12dp"
-                        android:layout_marginStart="5dp"
-                        android:textColor="#969696"
-                        android:fontFamily="@font/chosungu_ttf"/>
-
-
-            </LinearLayout>
 
             <!--내용-->
             <LinearLayout

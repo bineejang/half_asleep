@@ -2,17 +2,22 @@ package com.example.half_asleep;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -25,6 +30,15 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import java.util.ArrayList;
+import java.util.List;
+
+import android.annotation.SuppressLint;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnTouchListener;
+import android.view.ViewTreeObserver.OnScrollChangedListener;
+import android.widget.ScrollView;
 
 import java.util.ArrayList;
 
@@ -78,7 +92,9 @@ public class CommuFragment extends Fragment {
     String myId;
     String myPin;
     CommuEntry Entry;
-    int offset=0;
+    protected int offset;
+    boolean position_flag=true;
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -101,12 +117,35 @@ public class CommuFragment extends Fragment {
             }
         });
 
-            request(recyclerView, adapter, offset);
+
+        ScrollView scrollView = view.findViewById(R.id.scroll);
+        request(recyclerView, adapter, 0);
 
 
+    scrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+        @Override
+        public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+            int offset=0;
+            offset+=10;
+            if (position_flag) {
 
-        return view;
+                if ((!v.canScrollVertically(1))) {
+                    request(recyclerView, adapter, offset);
+
+                } else if ((!v.canScrollVertically(-1))) {
+                    offset+=10;
+                }
+                position_flag = false;
+            } else position_flag = true;
+            }
+
+
+    });
+
+
+return view;
     }
+
     public void request(RecyclerView recyclerView,Adapter adapter,int offset){
         RequestQueue queue;
         queue = Volley.newRequestQueue(getContext());
@@ -130,11 +169,11 @@ public class CommuFragment extends Fragment {
                         );
                         list.add(Entry);
                     }
-                    recyclerView.setAdapter(adapter);
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
+                recyclerView.setAdapter(adapter);
             }
         }, new Response.ErrorListener() {
             @Override
@@ -144,4 +183,11 @@ public class CommuFragment extends Fragment {
         });
         queue.add(jsonObjectRequest_i);
     }
+
+
+    /**
+     * @author with_soju
+     * 스크롤 하단 터치 인식 클래스
+     */
+
 }
