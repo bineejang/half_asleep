@@ -9,26 +9,34 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.sql.Array;
+import java.util.ArrayList;
 
 public class View_post extends AppCompatActivity {
     String myPin;
+    ArrayList<CommentEntry> list = new ArrayList<CommentEntry>();
+    CommentEntry Entry;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_commu_detail);
@@ -46,6 +54,8 @@ public class View_post extends AppCompatActivity {
         EditText content = findViewById(R.id.et_content);
         ImageView Edit_post = findViewById(R.id.iv_edit);
         ImageView Del_post = findViewById(R.id.iv_trash);
+
+        RecyclerView recyclerView = findViewById(R.id.comment);
 
         Edit_post.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -99,9 +109,49 @@ public class View_post extends AppCompatActivity {
                         Edit_post.setVisibility(View.GONE);
                         Del_post.setVisibility(View.GONE);
                     }
+                    CommentAdapter commentAdapter = new CommentAdapter(list);
+                    String url_c = "http://58.126.238.66:9900/comments/";
+                    url_c = url_c+postID;
+                    JsonArrayRequest jsonObjectRequest_c = new JsonArrayRequest(Request.Method.GET, url_c, null, new Response.Listener<JSONArray>() {
+                        @Override
+                        public void onResponse(JSONArray response) {
+                            try {
+                                for (int i = 0; i < response.length(); i++) {
+                                    JSONObject idobj = response.getJSONObject(i);
+                                    Entry = new CommentEntry(
+                                            idobj.getString("comment_id"),
+                                            idobj.getString("member_name"),
+                                            idobj.getString("comment_date"),
+                                            idobj.getString("member_prf"),
+                                            idobj.getString("pin"),
+                                            idobj.getString("comment_content")
+                                    );
+                                    list.add(Entry);
+                                }
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                            recyclerView.setAdapter(commentAdapter);
+                        }
+
+                        //응답받은 JSONObject 에서 데이터 꺼내오
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            content.setText(error.toString());
+                        }
+                    });
+                    queue.add(jsonObjectRequest_c);
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+
+
+
+
             }
         }, new Response.ErrorListener() {
             @Override
@@ -110,5 +160,10 @@ public class View_post extends AppCompatActivity {
             }
         });
         queue.add(jsonObjectRequest);
+
+
+
+
+
     }
 }

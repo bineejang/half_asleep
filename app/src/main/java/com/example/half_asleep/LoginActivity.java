@@ -37,15 +37,15 @@ public class LoginActivity extends AppCompatActivity {
         SharedPreferences pref;
         SharedPreferences.Editor editor;
         pref = getSharedPreferences("pin", 0);
-        pref = getSharedPreferences("id", 0);
-        editor = pref.edit();
-
         myPin = pref.getString("pin", "0");
-
+        editor = pref.edit();
+        pref = getSharedPreferences("id",0);
+        myId = pref.getString("id","");
         RequestQueue queue;
         queue = Volley.newRequestQueue(this);
         EditText id = findViewById(R.id.login_id);
         EditText pwd = findViewById(R.id.login_pwd);
+
         JSONObject jsonObject = new JSONObject();
 
         String url = "http://58.126.238.66:9900/login";
@@ -72,9 +72,10 @@ public class LoginActivity extends AppCompatActivity {
 
                         try {
                             pin = response.getString("pin");
+                            Toast.makeText(LoginActivity.this, "pin: " + pin, Toast.LENGTH_SHORT).show();
                             message = response.getString("message");
                             editor.putString("pin",pin);
-                            editor.putString("id",id.getText().toString());
+                            editor.putString("id",j_id);
                             editor.apply();
                         } catch (JSONException e) {
                             e.printStackTrace();

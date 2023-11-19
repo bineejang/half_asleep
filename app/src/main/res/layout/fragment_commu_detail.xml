@@ -121,15 +121,6 @@
                 android:layout_marginBottom="40dp"
                 android:orientation="vertical">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="내용"
-                    android:textSize="16dp"
-                    android:textStyle="bold"
-                    android:textColor="@color/mainblue"
-                    android:fontFamily="@font/chosungu_ttf"/>
-
                 <EditText
                     android:id="@+id/et_content"
                     android:layout_width="match_parent"
@@ -149,6 +140,13 @@
                     android:overScrollMode="always"
                     android:padding="8dp"/>
 
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/comment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/list_comment" />
             </LinearLayout>
 
 

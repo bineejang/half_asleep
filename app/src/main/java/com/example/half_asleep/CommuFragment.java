@@ -5,18 +5,13 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
@@ -30,16 +25,6 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import java.util.ArrayList;
-import java.util.List;
-
-import android.annotation.SuppressLint;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.View.OnTouchListener;
-import android.view.ViewTreeObserver.OnScrollChangedListener;
-import android.widget.ScrollView;
-
 import java.util.ArrayList;
 
 /**
@@ -104,10 +89,10 @@ public class CommuFragment extends Fragment {
         SharedPreferences pref_p = getActivity().getSharedPreferences("pin",0);
         myPin = pref_p.getString("pin","");
 
-        Adapter adapter = new Adapter(list);
+        CommuAdapter commuAdapter = new CommuAdapter(list);
         RecyclerView recyclerView = view.findViewById(R.id.rv_diary);
 ///get_posts_friends/<pin>
-        adapter.setOnItemClickListener(new Adapter.OnItemClickListener() {
+        commuAdapter.setOnItemClickListener(new CommuAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View v, int pos) {
                 String id = list.get(pos).getPost_id();
@@ -119,7 +104,7 @@ public class CommuFragment extends Fragment {
 
 
         ScrollView scrollView = view.findViewById(R.id.scroll);
-        request(recyclerView, adapter, 0);
+        request(recyclerView, commuAdapter, 0);
 
 
     scrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
@@ -130,7 +115,7 @@ public class CommuFragment extends Fragment {
             if (position_flag) {
 
                 if ((!v.canScrollVertically(1))) {
-                    request(recyclerView, adapter, offset);
+                    request(recyclerView, commuAdapter, offset);
 
                 } else if ((!v.canScrollVertically(-1))) {
                     offset+=10;
@@ -146,7 +131,7 @@ public class CommuFragment extends Fragment {
 return view;
     }
 
-    public void request(RecyclerView recyclerView,Adapter adapter,int offset){
+    public void request(RecyclerView recyclerView, CommuAdapter commuAdapter, int offset){
         RequestQueue queue;
         queue = Volley.newRequestQueue(getContext());
         String url = "http://58.126.238.66:9900/get_posts?offset=";
@@ -173,7 +158,7 @@ return view;
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                recyclerView.setAdapter(adapter);
+                recyclerView.setAdapter(commuAdapter);
             }
         }, new Response.ErrorListener() {
             @Override

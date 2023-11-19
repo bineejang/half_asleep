@@ -1,7 +1,6 @@
 package com.example.half_asleep;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
@@ -13,10 +12,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import java.util.ArrayList;
 
-public class Adapter extends RecyclerView.Adapter<Adapter.Holder> {
+public class CommuAdapter extends RecyclerView.Adapter<CommuAdapter.Holder> {
 public interface OnItemClickListener {
     void onItemClick(View v, int pos);
 }
@@ -27,7 +25,7 @@ public void setOnItemClickListener(OnItemClickListener listener){
 }
     ArrayList<CommuEntry> list;
 
-    Adapter(ArrayList<CommuEntry> list) {
+    CommuAdapter(ArrayList<CommuEntry> list) {
         this.list = list;
     }
 
@@ -47,8 +45,6 @@ public void setOnItemClickListener(OnItemClickListener listener){
         holder.Date.setText(list.get(position).getpostDate());
         holder.prf.setImageBitmap(StringToBitmap(list.get(position).getprofileImage()));
         holder.thumb.setImageBitmap(StringToBitmap(list.get(position).getpostImage()));
-
-
     }
 
 

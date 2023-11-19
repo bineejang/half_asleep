@@ -55,6 +55,9 @@ public class Edit_post extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         Toast.makeText(Edit_post.this, "수정 완료" , Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(Edit_post.this,MainActivity.class);
+                        startActivity(intent);
+                        finish();
                     }
                 }, new Response.ErrorListener() {
                     @Override

@@ -50,12 +50,9 @@ public class JoinActivity extends AppCompatActivity {
                 try {
                     InputStream in = getContentResolver().openInputStream(data.getData());
                     Bitmap img = BitmapFactory.decodeStream(in);
-
                     in.close();
                     ops = BitmapToString(img);
                     imageView.setImageBitmap(img);
-
-
                 } catch (Exception e) {
                 }
 
