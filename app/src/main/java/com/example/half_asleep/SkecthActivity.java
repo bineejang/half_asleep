@@ -96,8 +96,8 @@ public class SkecthActivity extends AppCompatActivity {
                 Intent intent = new Intent(SkecthActivity.this, reDrawActivity.class);
                 intent.putExtra("imagePath", filePath);
 
-                String prompt = editText.getText().toString();
-                intent.putExtra("prompt", prompt);
+                String scene = editText.getText().toString();
+                intent.putExtra("scene", scene);
                 intent.putExtra("diary", diary);
                 startActivity(intent);
             }

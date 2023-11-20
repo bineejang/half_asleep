@@ -95,6 +95,7 @@ public class CompleteDiaryActivity extends AppCompatActivity {
         sketch = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
 
         String diary = getIntent().getStringExtra("diary");
+        String prompt = getIntent().getStringExtra("prompt");
         content.setText(diary);
 
         complete.setOnClickListener(new View.OnClickListener() {
@@ -108,6 +109,7 @@ public class CompleteDiaryActivity extends AppCompatActivity {
                     jsonObject_d.put("content", diary);
                     jsonObject_d.put("pin",myPin);
                     jsonObject_d.put("date",date);
+                    jsonObject_d.put("prompt",prompt);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

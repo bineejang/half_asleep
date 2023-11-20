@@ -12,7 +12,12 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 public class CommuAdapter extends RecyclerView.Adapter<CommuAdapter.Holder> {
 public interface OnItemClickListener {
@@ -42,11 +47,21 @@ public void setOnItemClickListener(OnItemClickListener listener){
     public void onBindViewHolder(@NonNull Holder holder, int position) {
         holder.content.setText(list.get(position).getcontent());
         holder.name.setText(list.get(position).getusername());
-        holder.Date.setText(list.get(position).getpostDate());
+        holder.Date.setText(formatDate(list.get(position).getpostDate()));
         holder.prf.setImageBitmap(StringToBitmap(list.get(position).getprofileImage()));
         holder.thumb.setImageBitmap(StringToBitmap(list.get(position).getpostImage()));
     }
-
+    private String formatDate(String dateString) {
+        try {
+            SimpleDateFormat inputFormat = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss 'GMT'", Locale.ENGLISH);
+            SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy.MM.dd", Locale.ENGLISH);
+            Date date = inputFormat.parse(dateString);
+            return outputFormat.format(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return dateString; // 포맷 변경에 실패한 경우, 원래 날짜 값을 그대로 반환
+        }
+    }
 
     @Override
     public int getItemCount() {

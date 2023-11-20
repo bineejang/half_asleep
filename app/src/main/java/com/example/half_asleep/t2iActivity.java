@@ -32,20 +32,80 @@ import java.io.ByteArrayOutputStream;
 public class t2iActivity extends AppCompatActivity {
 
     private ProgressBar progressBar;
-
+    String prompt;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_t2i);
         RequestQueue queue;
         queue = Volley.newRequestQueue(this);
         ImageView imageView = findViewById(R.id.iv_t2i);
-        ImageView generate = findViewById(R.id.iv_redraw_t2i);
+        ImageView feedback = findViewById(R.id.iv_upload);
+        ImageView remake = findViewById(R.id.iv_redraw_t2i);
         progressBar = findViewById(R.id.progressBar);
         JSONObject jsonObject = new JSONObject();
         Button sendBtn = findViewById(R.id.btn_finish_t2i);
-        String url = "http://58.126.238.66:9900/generate_image_t2i";
+        String url = "http://58.126.238.66:9900/generate_image_t2i_diary";
         EditText editText = findViewById(R.id.et_t2i_add_prompt);
         String diary = getIntent().getStringExtra("diary");
+
+        try {
+            jsonObject.put("diary_content",diary);
+            progressBar.setVisibility(View.VISIBLE);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject, new Response.Listener<JSONObject>() {
+            //응답받은 JSONObject 에서 데이터 꺼내오기
+            @Override
+            public void onResponse(JSONObject response) {
+                progressBar.setVisibility(View.GONE);
+                parseData(response,imageView);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(t2iActivity.this, "error: " + error.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                60000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        queue.add(jsonObjectRequest);
+
+        remake.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String url = "http://58.126.238.66:9900/generate_image_t2i_remake";
+                JSONObject jsonObject= new JSONObject();
+                try {
+                    jsonObject.put("prompt",prompt);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject, new Response.Listener<JSONObject>() {
+                    //응답받은 JSONObject 에서 데이터 꺼내오기
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        progressBar.setVisibility(View.GONE);
+                        parseData(response,imageView);
+                    }
+
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        progressBar.setVisibility(View.GONE);
+                        Toast.makeText(t2iActivity.this, "error: " + error.toString(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+                jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                        60000,
+                        DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                        DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+                queue.add(jsonObjectRequest);
+            }
+        });
 
         sendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,18 +118,21 @@ public class t2iActivity extends AppCompatActivity {
                 byte[] byteArray = stream.toByteArray();
                 intent.putExtra("image", byteArray);
                 intent.putExtra("diary", diary);
+                intent.putExtra("prompt",prompt);
                 startActivity(intent);
                 finish();
             }
         });
-        generate.setOnClickListener(new View.OnClickListener() {
+        feedback.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 progressBar.setVisibility(View.VISIBLE); // 이미지 로딩 전에 ProgressBar 표시
                 EditText editText = findViewById(R.id.et_t2i_add_prompt);
-                String prompt= editText.getText().toString();
+                String url = "http://58.126.238.66:9900/generate_image_t2i_add_feedback";
+                String add= editText.getText().toString();
                 try{
                     jsonObject.put("prompt", prompt);
+                    jsonObject.put("feedback",add);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -112,10 +175,10 @@ public class t2iActivity extends AppCompatActivity {
     private void parseData(JSONObject object,ImageView imageView) {
 
         String base64String=null;
-        String pt = null;
+
         try {
             base64String = object.getString("image");
-            pt=object.getString("prompt");
+            prompt=object.getString("prompt");
         } catch (JSONException e) {
             e.printStackTrace();
         }

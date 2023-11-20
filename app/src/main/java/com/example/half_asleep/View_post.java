@@ -31,12 +31,27 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.sql.Array;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 public class View_post extends AppCompatActivity {
     String myPin;
     ArrayList<CommentEntry> list = new ArrayList<CommentEntry>();
     CommentEntry Entry;
+    private String formatDate(String dateString) {
+        try {
+            SimpleDateFormat inputFormat = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss 'GMT'", Locale.ENGLISH);
+            SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy.MM.dd", Locale.ENGLISH);
+            Date date = inputFormat.parse(dateString);
+            return outputFormat.format(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return dateString; // 포맷 변경에 실패한 경우, 원래 날짜 값을 그대로 반환
+        }
+    }
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_commu_detail);
@@ -101,7 +116,7 @@ public class View_post extends AppCompatActivity {
                 try {
                     String pin;
                     postimg.setImageBitmap(StringToBitmap(response.getString("image_data")));
-                    Date.setText(response.getString("post_date"));
+                    Date.setText(formatDate(response.getString("post_date")));
                     content.setText(response.getString("post_content"));
                     pin=response.getString("pin");
 

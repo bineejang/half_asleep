@@ -25,7 +25,12 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -33,7 +38,17 @@ import java.util.ArrayList;
  * create an instance of this fragment.
  */
 public class CommuFragment extends Fragment {
-
+    private String formatDate(String dateString) {
+        try {
+            SimpleDateFormat inputFormat = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss 'GMT'", Locale.ENGLISH);
+            SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy.MM.dd", Locale.ENGLISH);
+            Date date = inputFormat.parse(dateString);
+            return outputFormat.format(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return dateString; // 포맷 변경에 실패한 경우, 원래 날짜 값을 그대로 반환
+        }
+    }
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -147,7 +162,7 @@ return view;
                         Entry = new CommuEntry(
                                 idobj.getString("post_id"),
                                 idobj.getString("username"),
-                                idobj.getString("date"),
+                                formatDate(idobj.getString("date")),
                                 idobj.getString("profileImage"),
                                 idobj.getString("postImage"),
                                 idobj.getString("content")

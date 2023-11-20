@@ -36,6 +36,7 @@ public class reDrawActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private Bitmap sketch;
     byte[] baos;
+    String prompt;
     public void getSketch(ImageView iv){
         BitmapDrawable drawable = (BitmapDrawable) iv.getDrawable();
         sketch = drawable.getBitmap();
@@ -50,7 +51,7 @@ public class reDrawActivity extends AppCompatActivity {
         super.onCreate(saveInstanceState);
         setContentView(R.layout.activity_i2i_redraw);
 
-        String url = "http://58.126.238.66:9900/generate_image_i2i";
+        String url = "http://58.126.238.66:9900/generate_image_i2i_scene";
         RequestQueue queue;
         queue = Volley.newRequestQueue(this);
         ImageView imageView = findViewById(R.id.iv_i2i);
@@ -59,17 +60,68 @@ public class reDrawActivity extends AppCompatActivity {
         // 인텐트에서 이미지 파일 경로 가져오기
         String imagePath = getIntent().getStringExtra("imagePath");
         String diary = getIntent().getStringExtra("diary");
-        String prompt = getIntent().getStringExtra("prompt");
+        String scene = getIntent().getStringExtra("scene");
         // 이미지 로드 및 표시
         Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
-// 그림을 저장할 경로 정의
+        // 그림을 저장할 경로 정의
         String filePath = getExternalFilesDir(Environment.DIRECTORY_PICTURES) + "/drawing.jpeg";
         ImageView generate = findViewById(R.id.iv_redraw_i2i);
         Button complete = findViewById(R.id.btn_finish_i2i);
+        Button before = findViewById(R.id.btn_before_i2i);
         imageView.setImageBitmap(bitmap);
         getSketch(imageView);
 
 
+        JSONObject jsonObject = new JSONObject();
+        String j_prof = BitmapToString(bitmap);
+        String j_prompt = prompt;
+        try {
+            jsonObject.put("sketch", j_prof);
+            jsonObject.put("scene", scene);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        progressBar.setVisibility(View.VISIBLE);
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject, new Response.Listener<JSONObject>() {
+            //응답받은 JSONObject 에서 데이터 꺼내오기
+            @Override
+            public void onResponse(JSONObject response) {
+                //parseData라는 함수의 변수 response는 서버로붙어 받은 응답,imageView는 이미지를 띄울 xml파일의 imageView,reprompt는 서버로 전송한 프롬프트가 맞게 들어갔는지 서버에서 사용한 걸 그대로보내주는 프롬프트
+                progressBar.setVisibility(View.GONE);
+                try {
+                    prompt = response.getString("prompt");
+                } catch (JSONException e){
+                    e.printStackTrace();
+                }
+
+                parseData(response,imageView);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(reDrawActivity.this, "error: " + error.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        //json timeout 정책 이걸로 사진뽑는 시간을 기다릴수 있음 원래는 2.5초라서 응답이 안오면 신호를 다시 보내는데 그러면 서버가 멈춤
+        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                60000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        queue.add(jsonObjectRequest);
+
+
+        before.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(reDrawActivity.this,SkecthActivity.class);
+                intent.putExtra("diary",diary);
+                startActivity(intent);
+            }
+        });
+
+        //작성 완료버튼
         complete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -85,14 +137,13 @@ public class reDrawActivity extends AppCompatActivity {
                 intent.putExtra("prompt", prompt);
                 startActivity(intent);
                 finish();
-
-
             }
         });
+        //
         generate.setOnClickListener(new View.OnClickListener() {
             public void onClick (View v){
+                String url = "http://58.126.238.66:9900/generate_image_i2i_remake";
                 progressBar.setVisibility(View.VISIBLE); // 이미지 로딩 전에 ProgressBar 표시
-
                 JSONObject jsonObject = new JSONObject();
                 String j_prof = BitmapToString(bitmap);
                 String j_prompt = prompt;
@@ -108,7 +159,7 @@ public class reDrawActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         //parseData라는 함수의 변수 response는 서버로붙어 받은 응답,imageView는 이미지를 띄울 xml파일의 imageView,reprompt는 서버로 전송한 프롬프트가 맞게 들어갔는지 서버에서 사용한 걸 그대로보내주는 프롬프트
                         progressBar.setVisibility(View.GONE);
-                        parseData(response, imageView);
+                        parseData(response,imageView);
                     }
                 }, new Response.ErrorListener() {
                     @Override

@@ -132,7 +132,7 @@ public class Viewprofile extends AppCompatActivity{
                     jsonObject.put("member_name",name.getText().toString());
                     jsonObject.put("member_email",email.getText().toString());
                     jsonObject.put("member_pw",pwd.getText().toString());
-                    jsonObject.put("profileImg",ops);
+                    jsonObject.put("member_prf",ops);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -163,7 +163,6 @@ public class Viewprofile extends AppCompatActivity{
                     id.setText(response.getString("id"));
                     name.setText(response.getString("name"));
                     email.setText(response.getString("email"));
-                    pwd.setText(response.getString("pwd"));
 
                 } catch (JSONException e) {
                     e.printStackTrace();
